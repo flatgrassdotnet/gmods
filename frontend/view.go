@@ -21,25 +21,11 @@ package frontend
 import (
 	"fmt"
 	"gmods/db"
-	"html/template"
 	"net/http"
 	"strconv"
 )
 
 func View(w http.ResponseWriter, r *http.Request) {
-	// TODO: do this once and store the template
-	t, err := template.New("base.html").Funcs(templateFuncs).ParseFiles("templates/base.html")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("failed to create template: %s", err), http.StatusInternalServerError)
-		return
-	}
-
-	t, err = t.ParseGlob("templates/include/*.html")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("failed to create template: %s", err), http.StatusInternalServerError)
-		return
-	}
-
 	var bd BaseData
 
 	bd.PageType = "view"

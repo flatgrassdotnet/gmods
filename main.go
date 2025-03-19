@@ -32,8 +32,14 @@ func main() {
 	port := flag.Int("port", 80, "http listen port")
 	flag.Parse()
 
+	// set up frontend
+	err := frontend.Init()
+	if err != nil {
+		log.Fatalf("failed to initialize frontend: %s", err)
+	}
+
 	// set up database
-	err := db.Init("metadata.json")
+	err = db.Init("metadata.json")
 	if err != nil {
 		log.Fatalf("failed to initialize database: %s", err)
 	}
