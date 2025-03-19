@@ -1,0 +1,8 @@
+{{define "tags"}}
+<div class="tagcloud">
+	{{range .Tags}}
+		<a href="/tags/{{.}}" class="tag">{{.}}</a>
+	{{end}}
+	[ <a href="/tags/">more...</a> ]
+</div>
+{{end}}

@@ -1,0 +1,51 @@
+{{define "view"}}
+<div style="clear:both; margin-top: 10px;">
+	<div id="titlebox">
+		<h2>{{.Name}}</h2>
+		<div class="dlmeta">
+			Size: {{.Size}} - Uploaded {{.Posted}} - {{.Downloads}} Downloads - Uploaded by <a href="/user/{{.AuthorID}}" class="username">{{.AuthorName}}</a>
+		</div>
+	</div>
+	<div class="screenshots">
+		{{range $i, $img := .Images}}<a href="?showimg={{$i}}">
+			<img src="{{$img}}" onerror="this.remove();" loading="lazy">
+		</a>{{end}}
+	</div>
+	<div style="overflow:hidden; margin-bottom: 13px;">
+		<div class="downloadinfo">
+			<div>
+				<a href="javascript: GetDownloadInfo('description');" class="biglink">
+					<img src="/static/img/information.png"> Description
+				</a>
+			</div>
+			<div>
+				<a href="javascript: GetDownloadInfo('zipcontents');" class="biglink">
+					<img src="/static/img/compress.png"> View Contents
+				</a>
+			</div>
+			<div>
+				<a href="javascript: GetDownloadInfo('downloaders');" class="biglink">
+					<img src="/static/img/group.png"> Show Downloaders
+				</a>
+			</div>
+		</div>
+		<form id="downloadform" method="POST" action="/download/{{.ID}}">
+			<input type="hidden" name="id" value="{{.ID}}">
+			<input type="submit" name="Mirror" value="Download File">
+		</form>
+		<div class="downloadinfo text-center">
+			Tags: {{range .Tags}}<a href="/tag/{{.}}">{{.}}</a> {{end}}
+		</div>
+	</div>
+	<div id="descriptionbox">
+		{{.Description}}
+		{{/*{{template "comments"}}*/}}
+	</div>{{/*
+	<div style="margin: 40px; text-align: left; height: 90px;">
+		<div class="small">
+			Link to this file:<br><br>
+			<input type="" value="[url=https://mods.flatgrass.net/view/{{.ID}}][img]http://mods.flatgrass.net/img/{{.ID}}[/img][/url]" size="90"> (Forums)<br>
+			<input type="" value="<a href='https://mods.flatgrass.net/view/{{.ID}}'> <img src='https://mods.flatgrass.net/img/{{.ID}}'></a>" size="90"> (HTML)
+		</div>
+	</div>*/}}
+</div>{{end}}

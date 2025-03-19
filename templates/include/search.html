@@ -1,0 +1,14 @@
+{{define "search"}}<form method="GET" action="/" style="margin-bottom: 13px; font-size: 16px;">
+	<table width="100%">
+		<tr>
+			{{/*<td>
+				<a href="/downloads/">Downloads</a> | List All By:
+				<a href="/downloads/?a=list">Age</a>,
+				<a href="/downloads/?a=list&b=downloads">Downloads</a>
+			</td>*/}}
+			<td align="right">
+				Search: <input type="text" id="searchinput" name="q" value="{{.}}">
+			</td>
+		</tr>
+	</table>
+</form>{{end}}

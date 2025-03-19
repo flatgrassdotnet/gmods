@@ -1,0 +1,12 @@
+{{define "home"}}
+	{{/*{{template "banner"}}*/}}
+	{{/*{{template "tags"}}*/}}
+	{{if ne .Query ""}}<div class="text-center">Results {{sum .Offset 1}} - {{sum .Shown .Offset}} of {{.Total}}</div>{{end}}
+	<div class="downloads-container">
+		{{range .Items}}
+			{{template "item" .}}
+		{{end}}
+	</div>
+	{{if and (ne .Query "") (lt (sum .Offset .Shown) .Total)}}<div class="text-center"><a href='?q={{.Query}}&o={{sum .Offset .Shown}}'>Next Page...</a></div>{{end}}
+	{{if eq .Query ""}}<div class="text-center"><a href="/">Show more...</a></div>{{end}}
+</div>{{end}}
