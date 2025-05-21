@@ -1,4 +1,4 @@
-:root {
+html {
 	accent-color: #F0F;
 	color-scheme: light;
 	scrollbar-color: #0AF #e4e4e4;
@@ -15,12 +15,12 @@ body {
 }
 
 a {
-	Text-decoration: none;
+	text-decoration: none;
 	color: #00f;
 }
 
 a:hover {
-	Text-decoration: underline;
+	text-decoration: underline;
 	color: #f0f !important;
 }
 
@@ -68,6 +68,14 @@ a.biglink {
 
 #navbar {
 	position: relative;
+}
+
+#navbar .links {
+	height: 64px;
+	display: inline-block;
+	display: inline-flex;
+	flex-direction: column;
+	justify-content: space-evenly;
 }
 
 #logo {
@@ -173,6 +181,9 @@ a.biglink {
 .tagcloud .tag:nth-child(n+76):nth-child(-n+80) {
 	font-size: 10px;
 }
+
+#footer {display: flex; align-items: center; justify-content: end;}
+#footer iframe {margin-left: 10px;}
 
 
 .downloads-container {

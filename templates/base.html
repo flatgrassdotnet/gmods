@@ -19,9 +19,8 @@
 			<div id="content">
 				{{template "search" .Query}}
 				{{if eq .PageType "home"}}{{template "home" .}}{{else}}{{template "view" .Item}}{{end}}
-				{{/*{{template "footer"}}*/}}
+				{{template "footer"}}
 			</div>
-			{{/*{{template "footer"}}*/}}
 		</div>
 	</body>
 </html>
