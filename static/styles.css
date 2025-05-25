@@ -73,9 +73,6 @@ a.biglink {
 #navbar .links {
 	height: 64px;
 	display: inline-block;
-	display: inline-flex;
-	flex-direction: column;
-	justify-content: space-evenly;
 }
 
 #logo {
