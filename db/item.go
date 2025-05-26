@@ -23,8 +23,7 @@ import (
 	"math/rand/v2"
 	"slices"
 	"strings"
-
-	"github.com/xeonx/timeago"
+	"time"
 )
 
 type Item struct {
@@ -40,7 +39,7 @@ type Item struct {
 	Images []string
 
 	Size      string
-	Posted    string
+	Posted    time.Time
 	Downloads int
 }
 
@@ -93,7 +92,7 @@ func GetItem(id int) (Item, error) {
 			return Item{}, err
 		}
 
-		item.Posted = timeago.English.Format(m.GetUploadTime())
+		item.Posted = m.GetUploadTime()
 
 		return item, nil
 	}

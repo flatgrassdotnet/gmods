@@ -3,7 +3,7 @@
 	<div class="banner">
 		<div class="author">By <a class="username" href="/user/{{.AuthorID}}">{{.AuthorName}}</a></div>
 		<a href="/view/{{.ID}}" class="biglink">{{.Name}}</a>
-		<div class="dlmeta">{{.Size}}, {{.Posted}}, {{.Downloads}} downloads</div>
+		<div class="dlmeta">{{.Size}}, {{timeago .Posted}}, {{.Downloads}} downloads</div>
 	</div>
 	<a class="clickzone" href="/view/{{.ID}}"></a>
 </div>

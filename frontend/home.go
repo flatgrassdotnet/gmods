@@ -24,6 +24,8 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"github.com/xeonx/timeago"
 )
 
 type BaseData struct {
@@ -51,7 +53,7 @@ var templateFuncs = template.FuncMap{"sum": func(num ...int) int {
 		i += v
 	}
 	return i
-}}
+}, "timeago": timeago.English.Format}
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	var bd BaseData

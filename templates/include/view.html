@@ -3,7 +3,7 @@
 	<div id="titlebox">
 		<h2>{{.Name}}</h2>
 		<div class="dlmeta">
-			Size: {{.Size}} - Uploaded {{.Posted}} - {{.Downloads}} Downloads - Uploaded by <a href="/user/{{.AuthorID}}" class="username">{{.AuthorName}}</a>
+			Size: {{.Size}} - Uploaded {{timeago .Posted}} - {{.Downloads}} Downloads - Uploaded by <a href="/user/{{.AuthorID}}" class="username">{{.AuthorName}}</a>
 		</div>
 	</div>
 	<div class="screenshots">
