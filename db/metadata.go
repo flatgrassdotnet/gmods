@@ -114,8 +114,11 @@ func (m MetadataItem) GetUploaderName() string {
 	if m.OrigUploader != "" {
 		return m.OrigUploader
 	}
+	if m.ReuploaderName != "garrysmod.org" {
+		return m.ReuploaderName
+	}
 
-	return m.ReuploaderName
+	return "Unknown"
 }
 
 func (m MetadataItem) GetUploaderID() (int, error) {
