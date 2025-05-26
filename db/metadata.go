@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type MetadataItem struct {
@@ -99,6 +100,22 @@ func (m MetadataItem) GetPrettySize() (string, error) {
 	}
 
 	return fmt.Sprintf("%.02f MB", size/1024/1024), nil
+}
+
+func (m MetadataItem) GetUploadTime() time.Time {
+	if m.OrigUploadDate != 00 {
+		return time.Unix(int64(m.OrigUploadDate), 0)
+	}
+
+	return time.Unix(int64(m.Reuploaded), 0)
+}
+
+func (m MetadataItem) GetUploaderName() string {
+	if m.OrigUploader != "" {
+		return m.OrigUploader
+	}
+
+	return m.ReuploaderName
 }
 
 func (m MetadataItem) GetUploaderID() (int, error) {

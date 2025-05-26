@@ -23,7 +23,6 @@ import (
 	"math/rand/v2"
 	"slices"
 	"strings"
-	"time"
 
 	"github.com/xeonx/timeago"
 )
@@ -76,7 +75,7 @@ func GetItem(id int) (Item, error) {
 		item.ID = mid
 		item.Name = m.Name
 
-		item.AuthorName = m.ReuploaderName
+		item.AuthorName = m.GetUploaderName()
 		item.AuthorID, err = m.GetUploaderID()
 		if err != nil {
 			return Item{}, err
@@ -94,7 +93,7 @@ func GetItem(id int) (Item, error) {
 			return Item{}, err
 		}
 
-		item.Posted = timeago.English.Format(time.Unix(int64(m.Reuploaded), 0))
+		item.Posted = timeago.English.Format(m.GetUploadTime())
 
 		return item, nil
 	}
