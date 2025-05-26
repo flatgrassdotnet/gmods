@@ -60,7 +60,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	var bd BaseData
 
 	bd.PageType = "home"
-	bd.Title = "Garry's Mod Related Files!"
+	bd.Title = "gmods.org - Garry's Mod Related Files!"
 
 	bd.Query = r.URL.Query().Get("q")
 	bd.Tag = r.PathValue("tag")
