@@ -86,7 +86,7 @@ func GetItem(id int) (Item, error) {
 		item.Tags = m.Tags
 
 		for _, i := range m.Images {
-			item.Images = append(item.Images, strings.ReplaceAll(i, "filecache.garrysmods.org", "modsdata.flatgrass.net"))
+			item.Images = append(item.Images, strings.ReplaceAll(i, "filecache.garrysmods.org", "data.gmods.org"))
 		}
 
 		item.Size, err = m.GetPrettySize()

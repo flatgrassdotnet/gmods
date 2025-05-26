@@ -39,5 +39,5 @@ func Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, strings.ReplaceAll(m.DLDirect, "filecache.garrysmods.org", "modsdata.flatgrass.net"), http.StatusSeeOther)
+	http.Redirect(w, r, strings.ReplaceAll(m.DLDirect, "filecache.garrysmods.org", "data.gmods.org"), http.StatusSeeOther)
 }
