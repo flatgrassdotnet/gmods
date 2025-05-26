@@ -46,6 +46,7 @@ func main() {
 
 	// set http routes
 	http.HandleFunc("GET /", frontend.Home)
+	http.HandleFunc("GET /tag/{tag}", frontend.Home)
 	http.HandleFunc("GET /view/{id}", frontend.View)
 
 	http.HandleFunc("POST /download/{id}", frontend.Download)

@@ -37,6 +37,7 @@ type BaseData struct {
 
 	// search
 	Query string
+	Tag   string
 
 	// "pagination"
 	Shown  int
@@ -62,7 +63,9 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	bd.Title = "Garry's Mod Related Files!"
 
 	bd.Query = r.URL.Query().Get("q")
-	if bd.Query == "" { // no search query, show random
+	bd.Tag = r.PathValue("tag")
+
+	if bd.Query == "" && bd.Tag == "" { // no search query or tag, show random
 		for range 20 {
 			id, err := db.GetRandomItemID()
 			if err != nil {
@@ -78,12 +81,21 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		}
 
 		bd.Total = db.GetTotal()
-	} else { // show search results
+	} else { // show search or tag results
 		var err error
-		bd.Items, err = db.GetItemsByName(bd.Query)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("failed to query downloads: %s", err), http.StatusInternalServerError)
-			return
+
+		if bd.Query != "" { // search qurry
+			bd.Items, err = db.GetItemsByName(bd.Query)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("failed to query downloads: %s", err), http.StatusInternalServerError)
+				return
+			}
+		} else { // tag
+			bd.Items, err = db.GetItemsByTag(bd.Tag)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("failed to query downloads: %s", err), http.StatusInternalServerError)
+				return
+			}
 		}
 
 		bd.Total = len(bd.Items)
