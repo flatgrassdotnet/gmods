@@ -86,16 +86,13 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 		if bd.Query != "" { // search qurry
 			bd.Items, err = db.GetItemsByName(bd.Query)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("failed to query downloads: %s", err), http.StatusInternalServerError)
-				return
-			}
+
 		} else { // tag
 			bd.Items, err = db.GetItemsByTag(bd.Tag)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("failed to query downloads: %s", err), http.StatusInternalServerError)
-				return
-			}
+		}
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to query downloads: %s", err), http.StatusInternalServerError)
+			return
 		}
 
 		bd.Total = len(bd.Items)
