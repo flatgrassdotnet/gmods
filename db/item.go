@@ -39,8 +39,9 @@ type Item struct {
 	Images []string
 
 	Size      string
-	Posted    time.Time
 	Downloads int
+
+	Posted    time.Time
 }
 
 func GetTotal() int {
@@ -91,6 +92,8 @@ func GetItem(id int) (Item, error) {
 		if err != nil {
 			return Item{}, err
 		}
+
+		item.Downloads = m.Downloads
 
 		item.Posted = m.GetUploadTime()
 
