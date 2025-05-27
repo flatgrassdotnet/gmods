@@ -19,24 +19,20 @@
 package db
 
 import (
-	"encoding/json"
-	"log"
-	"os"
+	"database/sql"
+	"fmt"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-var metadata []MetadataItem
+var conn *sql.DB
 
-func Init(path string) error {
-	f, err := os.Open(path)
+func Init(username string, password string, address string, database string) error {
+	var err error
+
+	conn, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", username, password, address, database))
 	if err != nil {
-		log.Fatalf("failed to open metadata.json: %s", err)
-	}
-
-	defer f.Close()
-
-	err = json.NewDecoder(f).Decode(&metadata)
-	if err != nil {
-		log.Fatalf("failed to decode metadata.json: %s", err)
+		return err
 	}
 
 	return nil

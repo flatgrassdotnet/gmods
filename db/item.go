@@ -19,134 +19,112 @@
 package db
 
 import (
+	"context"
+	"database/sql"
 	"errors"
-	"math/rand/v2"
-	"slices"
-	"strings"
-	"time"
+	"fmt"
 )
 
 type Item struct {
-	ID   int
-	Name string
+	ID          int
+	Name        string
+	Filename    string
+	Description sql.NullString
+	Size        int
+	Uploader    sql.NullString
+	Uploaded    sql.NullTime
 
-	AuthorName string
-	AuthorID   int
+	Tags   []string
+	Images map[int]string
 
-	Description string
-	Tags        []string
-
-	Images []string
-
-	Size      string
 	Downloads int
-
-	Posted    time.Time
+	Views     int
 }
 
-func GetTotal() int {
-	return len(metadata)
+var ErrInvalidID = errors.New("download id not found")
+
+func (i Item) PrettySize() string {
+	return fmt.Sprintf("%.02f MB", float64(i.Size)/1024/1024)
 }
 
-// returns the id of a random download
-func GetRandomItemID() (int, error) {
-	id, err := metadata[rand.IntN(len(metadata))].GetID()
+func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) {
+	q := "SELECT p.id, p.name, p.filename, p.description, p.size, p.uploader, p.uploaded, s.downloads, s.views FROM packages p JOIN stats s ON p.id = s.pid"
+	var args []any
+
+	if tag != "" {
+		q += " JOIN tags t ON t.pid = p.id WHERE t.tag = ?"
+		args = append(args, tag)
+	}
+	if query != "" {
+		q += " WHERE p.name LIKE CONCAT('%', ?, '%')"
+		args = append(args, query)
+	}
+	if tag == "" && query == "" {
+		q += " ORDER BY RAND() LIMIT 20"
+	}
+
+	var items []Item
+	rows, err := conn.QueryContext(ctx, q, args...)
 	if err != nil {
-		return 0, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrInvalidID
+		}
+
+		return nil, err
 	}
-
-	return id, nil
-}
-
-// returns a download by its id
-func GetItem(id int) (Item, error) {
-	for _, m := range metadata {
-		mid, err := m.GetID()
-		if err != nil {
-			continue
-		}
-
-		if mid != id {
-			continue
-		}
-
+	for rows.Next() {
 		var item Item
-
-		item.ID = mid
-		item.Name = m.Name
-
-		item.AuthorName = m.GetUploaderName()
-		item.AuthorID, err = m.GetUploaderID()
+		err = rows.Scan(&item.ID, &item.Name, &item.Filename, &item.Description, &item.Size, &item.Uploader, &item.Uploaded, &item.Downloads, &item.Views)
 		if err != nil {
-			return Item{}, err
+			return nil, err
 		}
 
-		item.Description = strings.ReplaceAll(m.Description, `\n`, "\n")
-		item.Tags = m.Tags
-
-		for _, i := range m.Images {
-			item.Images = append(item.Images, strings.ReplaceAll(i, "filecache.garrysmods.org", "data.gmods.org"))
-		}
-
-		item.Size, err = m.GetPrettySize()
-		if err != nil {
-			return Item{}, err
-		}
-
-		item.Downloads = m.Downloads
-
-		item.Posted = m.GetUploadTime()
-
-		return item, nil
+		items = append(items, item)
 	}
 
-	return Item{}, errors.New("download id not found")
+	return items, nil
 }
 
-// returns downloads with name that contains string
-func GetItemsByName(name string) ([]Item, error) {
-	var results []Item
-	for _, m := range metadata {
-		if !strings.Contains(strings.ToLower(m.Name), strings.ToLower(name)) {
-			continue
+func GetItem(ctx context.Context, id int) (Item, error) {
+	item := Item{ID: id, Images: make(map[int]string)}
+
+	err := conn.QueryRowContext(ctx, "SELECT name, filename, description, size, uploader, uploaded FROM packages WHERE id = ?", id).Scan(&item.Name, &item.Filename, &item.Description, &item.Size, &item.Uploader, &item.Uploaded)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return item, ErrInvalidID
 		}
 
-		id, err := m.GetID()
-		if err != nil {
-			return nil, err
-		}
-
-		dl, err := GetItem(id)
-		if err != nil {
-			return nil, err
-		}
-
-		results = append(results, dl)
+		return item, err
 	}
 
-	return results, nil
-}
-
-// return downloads that contain tag
-func GetItemsByTag(tag string) ([]Item, error) {
-	var results []Item
-	for _, m := range metadata {
-		if !slices.Contains(m.Tags, tag) {
-			continue
-		}
-
-		id, err := m.GetID()
+	rows, err := conn.QueryContext(ctx, "SELECT i.id, i.res FROM images i JOIN packages p ON p.id = i.pid WHERE p.id = ?", id)
+	if err != nil {
+		return item, err
+	}
+	for rows.Next() {
+		var id int
+		var res string
+		err = rows.Scan(&id, &res)
 		if err != nil {
-			return nil, err
+			return item, err
 		}
 
-		dl, err := GetItem(id)
-		if err != nil {
-			return nil, err
-		}
-
-		results = append(results, dl)
+		item.Images[id] = res
 	}
 
-	return results, nil
+	rows, err = conn.QueryContext(ctx, "SELECT t.tag FROM tags t JOIN packages p ON p.id = t.pid WHERE p.id = ?", id)
+	if err != nil {
+		return item, err
+	}
+	for rows.Next() {
+		var tag string
+		err = rows.Scan(&tag)
+		if err != nil {
+			return item, err
+		}
+
+		item.Tags = append(item.Tags, tag)
+	}
+
+	return item, nil
 }

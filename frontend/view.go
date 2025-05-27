@@ -36,7 +36,7 @@ func View(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bd.Item, err = db.GetItem(id)
+	bd.Item, err = db.GetItem(r.Context(), id)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to get download: %s", err), http.StatusInternalServerError)
 		return

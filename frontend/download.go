@@ -23,7 +23,6 @@ import (
 	"gmods/db"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 func Download(w http.ResponseWriter, r *http.Request) {
@@ -33,11 +32,11 @@ func Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m, err := db.GetMetadataFromID(id)
+	item, err := db.GetItem(r.Context(), id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("failed to get metadata: %s", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("failed to get item: %s", err), http.StatusInternalServerError)
 		return
 	}
 
-	http.Redirect(w, r, strings.ReplaceAll(m.DLDirect, "filecache.garrysmods.org", "data.gmods.org"), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("https://data.gmods.org/%d/%s", item.ID, item.Filename), http.StatusSeeOther)
 }

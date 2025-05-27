@@ -29,6 +29,10 @@ import (
 
 func main() {
 	// flag stuff
+	dbuser := flag.String("dbuser", "gmods", "database user's name")
+	dbpass := flag.String("dbpass", "", "database user's password")
+	dbaddr := flag.String("dbaddr", "localhost", "database server address")
+	dbname := flag.String("dbname", "gmods", "database name")
 	port := flag.Int("port", 80, "http listen port")
 	flag.Parse()
 
@@ -39,7 +43,7 @@ func main() {
 	}
 
 	// set up database
-	err = db.Init("metadata.json")
+	err = db.Init(*dbuser, *dbpass, *dbaddr, *dbname)
 	if err != nil {
 		log.Fatalf("failed to initialize database: %s", err)
 	}

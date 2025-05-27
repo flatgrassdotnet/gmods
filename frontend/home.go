@@ -57,6 +57,7 @@ var templateFuncs = template.FuncMap{"sum": func(num ...int) int {
 }, "timeago": timeago.English.Format}
 
 func Home(w http.ResponseWriter, r *http.Request) {
+	var err error
 	var bd BaseData
 
 	bd.PageType = "home"
@@ -65,66 +66,41 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	bd.Query = r.URL.Query().Get("q")
 	bd.Tag = r.PathValue("tag")
 
-	if bd.Query == "" && bd.Tag == "" { // no search query or tag, show random
-		for range 20 {
-			id, err := db.GetRandomItemID()
-			if err != nil {
-				continue
-			}
+	bd.Items, err = db.GetItemList(r.Context(), bd.Tag, bd.Query)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to query downloads: %s", err), http.StatusInternalServerError)
+		return
+	}
 
-			d, err := db.GetItem(id)
-			if err != nil {
-				continue
-			}
+	bd.Total = len(bd.Items)
 
-			bd.Items = append(bd.Items, d)
-		}
-
-		bd.Total = db.GetTotal()
-	} else { // show search or tag results
-		var err error
-
-		if bd.Query != "" { // search qurry
-			bd.Items, err = db.GetItemsByName(bd.Query)
-
-		} else { // tag
-			bd.Items, err = db.GetItemsByTag(bd.Tag)
-		}
+	// offset
+	if r.URL.Query().Get("o") != "" {
+		bd.Offset, err = strconv.Atoi(r.URL.Query().Get("o"))
 		if err != nil {
-			http.Error(w, fmt.Sprintf("failed to query downloads: %s", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("failed to decode offset: %s", err), http.StatusInternalServerError)
 			return
 		}
 
-		bd.Total = len(bd.Items)
-
-		// offset
-		if r.URL.Query().Get("o") != "" {
-			bd.Offset, err = strconv.Atoi(r.URL.Query().Get("o"))
-			if err != nil {
-				http.Error(w, fmt.Sprintf("failed to decode offset: %s", err), http.StatusInternalServerError)
-				return
-			}
-
-			if bd.Offset < 0 {
-				http.Error(w, "invalid offset", http.StatusInternalServerError)
-				return
-			}
-
-			start := min(len(bd.Items), bd.Offset)
-			end := min(len(bd.Items), start+20)
-
-			bd.Items = bd.Items[start:end]
+		if bd.Offset < 0 {
+			http.Error(w, "invalid offset", http.StatusInternalServerError)
+			return
 		}
 
-		// limit to 20
-		if len(bd.Items) > 20 {
-			bd.Items = bd.Items[:20]
-		}
+		start := min(len(bd.Items), bd.Offset)
+		end := min(len(bd.Items), start+20)
+
+		bd.Items = bd.Items[start:end]
+	}
+
+	// limit to 20
+	if len(bd.Items) > 20 {
+		bd.Items = bd.Items[:20]
 	}
 
 	bd.Shown = len(bd.Items)
 
-	err := t.Execute(w, bd)
+	err = t.Execute(w, bd)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to execute template: %s", err), http.StatusInternalServerError)
 		return

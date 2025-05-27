@@ -3,12 +3,12 @@
 	<div id="titlebox">
 		<h2>{{.Name}}</h2>
 		<div class="dlmeta">
-			Size: {{.Size}} - Uploaded {{timeago .Posted}} - {{.Downloads}} Downloads - Uploaded by <a href="/user/{{.AuthorID}}" class="username">{{.AuthorName}}</a>
+			Size: {{.PrettySize}} {{if .Uploaded.Valid}}- Uploaded {{timeago .Uploaded.Time}}{{end}} - {{.Downloads}} Downloads - Uploaded by <a href="#" class="username">{{if .Uploader.Valid}}{{.Uploader.String}}{{else}}Unknown{{end}}</a>
 		</div>
 	</div>
 	<div class="screenshots">
-		{{range $i, $img := .Images}}<a href="?showimg={{$i}}">
-			<img src="{{$img}}" onerror="this.remove();" loading="lazy">
+		{{range $id, $res := .Images}}<a href="?showimg={{$id}}">
+			<img src="https://data.gmods.org/{{$.ID}}/{{$id}}/{{$res}}.jpg" onerror="this.remove();" loading="lazy">
 		</a>{{end}}
 	</div>
 	<div style="overflow:hidden; margin-bottom: 13px;">
@@ -38,7 +38,7 @@
 		</div>
 	</div>
 	<div id="descriptionbox">
-		{{.Description}}
+		{{if .Description.Valid}}{{.Description.String}}{{else}}<i>No description...</i>{{end}}
 		{{/*{{template "comments"}}*/}}
 	</div>{{/*
 	<div style="margin: 40px; text-align: left; height: 90px;">
