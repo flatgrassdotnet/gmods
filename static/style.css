@@ -282,6 +282,7 @@ div.download .banner .author {
 	padding: 40px;
 	border: 2px solid #dda;
 	font-size: 12px;
+	white-space: pre-wrap;
 }
 
 .left {

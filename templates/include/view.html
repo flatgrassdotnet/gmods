@@ -37,9 +37,7 @@
 			Tags: {{range .Tags}}<a href="/tag/{{.}}">{{.}}</a> {{end}}
 		</div>
 	</div>
-	<div id="descriptionbox">
-		{{if .Description.Valid}}{{.Description.String}}{{else}}<i>No description...</i>{{end}}
-		{{/*{{template "comments"}}*/}}
+	<div id="descriptionbox">{{if .Description.Valid}}{{.Description.String}}{{else}}<i>No description...</i>{{end}}{{/*{{template "comments"}}*/}}
 	</div>{{/*
 	<div style="margin: 40px; text-align: left; height: 90px;">
 		<div class="small">
