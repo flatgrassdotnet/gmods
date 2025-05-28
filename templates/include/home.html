@@ -1,6 +1,6 @@
 {{define "home"}}
 {{/*{{template "banner"}}*/}}
-{{/*{{template "tags"}}*/}}
+{{template "tags" .Tags}}
 {{if or (ne .Query "") (ne .Tag "")}}<div class="text-center">Results {{sum .Offset 1}} - {{sum .Shown .Offset}} of {{.Total}}</div>{{end}}
 <div class="downloads-container">
 	{{range .Items}}

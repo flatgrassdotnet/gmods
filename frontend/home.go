@@ -33,6 +33,7 @@ type BaseData struct {
 	Title    string
 
 	// home
+	Tags  []string
 	Items []db.Item
 
 	// search
@@ -65,6 +66,12 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 	bd.Query = r.URL.Query().Get("q")
 	bd.Tag = r.PathValue("tag")
+
+	bd.Tags, err = db.GetPopularTags(r.Context())
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to query tags: %s", err), http.StatusInternalServerError)
+		return
+	}
 
 	bd.Items, err = db.GetItemList(r.Context(), bd.Tag, bd.Query)
 	if err != nil {
