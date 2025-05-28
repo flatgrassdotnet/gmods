@@ -37,9 +37,8 @@
 			Tags: {{range .Tags}}<a href="/tag/{{.}}">{{.}}</a> {{end}}
 		</div>
 	</div>
-	<div id="descriptionbox">{{if .Description.Valid}}{{.Description.String}}{{else}}<i>No description...</i>{{end}}{{/*{{template "comments"}}*/}}
-	</div>{{/*
-	<div style="margin: 40px; text-align: left; height: 90px;">
+	<div id="descriptionbox">{{if .Description.Valid}}{{.Description.String}}{{else}}<i>No description...</i>{{end}}{{/*{{template "comments"}}*/}}</div>
+	{{/*<div style="margin: 40px; text-align: left; height: 90px;">
 		<div class="small">
 			Link to this file:<br><br>
 			<input type="" value="[url=https://mods.flatgrass.net/view/{{.ID}}][img]http://mods.flatgrass.net/img/{{.ID}}[/img][/url]" size="90"> (Forums)<br>
