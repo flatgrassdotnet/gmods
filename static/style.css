@@ -180,7 +180,7 @@ a.biglink {
 	font-size: 10px;
 }
 
-#footer {display: flex; align-items: center; justify-content: end;}
+#footer {display: flex; align-items: center; justify-content: end; margin: 0px 20px;}
 #footer iframe {margin-left: 10px;}
 
 
