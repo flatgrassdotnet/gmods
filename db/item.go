@@ -128,22 +128,3 @@ func GetItem(ctx context.Context, id int) (Item, error) {
 
 	return item, nil
 }
-
-func GetPopularTags(ctx context.Context) ([]string, error) {
-	var tags []string
-	rows, err := conn.QueryContext(ctx, "SELECT tag FROM tags GROUP BY tag ORDER BY COUNT(*) DESC, tag ASC LIMIT 100")
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		var tag string
-		err = rows.Scan(&tag)
-		if err != nil {
-			return nil, err
-		}
-
-		tags = append(tags, tag)
-	}
-
-	return tags, nil
-}
