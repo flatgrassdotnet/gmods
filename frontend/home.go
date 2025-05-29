@@ -87,16 +87,12 @@ func Home(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, fmt.Sprintf("failed to decode offset: %s", err), http.StatusInternalServerError)
 			return
 		}
-
 		if bd.Offset < 0 {
 			http.Error(w, "invalid offset", http.StatusInternalServerError)
 			return
 		}
 
-		start := min(len(bd.Items), bd.Offset)
-		end := min(len(bd.Items), start+20)
-
-		bd.Items = bd.Items[start:end]
+		bd.Items = bd.Items[min(len(bd.Items), bd.Offset):]
 	}
 
 	// limit to 20
