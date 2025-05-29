@@ -40,8 +40,7 @@ type BaseData struct {
 	Query string
 	Tag   string
 
-	// "pagination"
-	Shown  int
+	// pagination
 	Total  int
 	Offset int
 
@@ -104,8 +103,6 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	if len(bd.Items) > 20 {
 		bd.Items = bd.Items[:20]
 	}
-
-	bd.Shown = len(bd.Items)
 
 	err = t.Execute(w, bd)
 	if err != nil {
