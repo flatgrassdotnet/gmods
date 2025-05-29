@@ -107,6 +107,16 @@ a.biglink {
     top: 63px;
 }
 
+.notice {
+	background-color: #ffa;
+	border: 1px solid black;
+	border-radius: 4px;
+	width: 800px;
+	margin: 32px auto;
+	padding: 16px;
+	white-space: pre-line;
+}
+
 #content {
 	margin: 20px;
 }
