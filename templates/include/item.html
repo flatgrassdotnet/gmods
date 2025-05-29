@@ -1,10 +1,8 @@
-{{define "item"}}
-<div class="download" style="background-image: url('https://data.gmods.org/{{.ID}}/1/570x180.jpg'), url('/static/img/placeholder.png');">
+{{define "item"}}<div class="download" style="background-image: url('https://data.gmods.org/{{.ID}}/1/570x180.jpg'), url('/static/img/placeholder.png');">
 	<div class="banner">
 		<div class="author">By <a class="username" href="#">{{if .Uploader.Valid}}{{.Uploader.String}}{{else}}Unknown{{end}}</a></div>
 		<a href="/view/{{.ID}}" class="biglink">{{.Name}}</a>
 		<div class="dlmeta">{{.PrettySize}}{{if .Uploaded.Valid}}, {{timeago .Uploaded.Time}}{{end}}, {{.Downloads}} downloads</div>
 	</div>
 	<a class="clickzone" href="/view/{{.ID}}"></a>
-</div>
-{{end}}
+</div>{{end}}
