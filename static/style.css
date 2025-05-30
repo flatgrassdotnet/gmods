@@ -109,10 +109,11 @@ a.biglink {
 
 .notice {
 	background-color: #ffa;
+	box-sizing: border-box;
 	border: 1px solid black;
 	border-radius: 4px;
-	width: 800px;
-	margin: 32px auto;
+	width: 770px;
+	margin: 16px auto;
 	padding: 16px;
 	white-space: pre-line;
 }
