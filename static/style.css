@@ -261,27 +261,33 @@ div.download .banner .author {
 	border: 0;
 }
 
+.downloadblocks {
+	overflow: hidden;
+	margin-bottom: 13px;
+	display: flex;
+	gap: 10px;
+}
+
 .downloadinfo {
 	height: 100px;
 	width: 220px;
 	padding: 10px;
 	box-sizing: border-box;
-	float: left;
 	border-radius: 10px;
 	border: 1px solid #ccc;
 	background-color: #eee;
 }
 
 #downloadform {
-	width: calc(100% - 440px);
 	text-align: center;
-	float: left;
+	flex-grow: 1;
+	padding-top: 5px;
 }
 
 #downloadform input[type="submit"] {
-	width: 200px; 
+	max-width: 200px; 
 	font-size: 15px; 
-	margin-top: 5px;
+	width: 100%;
 }
 
 #descriptionbox {
@@ -376,8 +382,6 @@ div.download .banner .author {
 	background-color: #fafafa !important;
 	border: 1px solid #ddd !important;
 	margin-top: 5px !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
 	border-radius: 10px;
 }
 
@@ -401,8 +405,6 @@ div.download .banner .author {
 	background-color: #def !important;
 	border: 2px solid #8ac !important;
 	margin-top: 5px !important;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
 	border-radius: 3px;
 }
 
@@ -420,8 +422,6 @@ div.download .banner .author {
 	padding: 20px;
 	background-color: #eee;
 	padding-bottom: 70px;
-	-moz-border-radius: 8px;
-	-webkit-border-radius: 8px;
 	border-radius: 8px;
 }
 
@@ -433,4 +433,32 @@ div.download .banner .author {
 
 .verified0 {
 	color: #00a;
+}
+
+
+@media (max-width: 799px) {
+	.notice, #document {width: 100%;}
+	.notice {margin-top:0;}
+	#document {margin:0;}
+}
+
+@media (max-width: 599px) {
+	.downloadblocks {flex-wrap: wrap; justify-content:space-between;}
+	.downloadinfo {padding: 8px;}
+	#downloadform  {order: -1; width: 100%; padding-top:0;}
+	
+	#descriptionbox {padding: 20px;}
+}
+
+@media (max-width: 569px) {
+	#document {padding-bottom:12px;}
+	#content, #footer {margin-left: 0; margin-right: 0;}
+
+	.tagcloud {padding-left: 10px; padding-right: 10px;}
+}
+
+@media (max-width: 499px) {
+	.downloads-container {grid-template-columns: auto;}
+	
+	.downloadinfo {width: 100%; height: auto;}
 }
