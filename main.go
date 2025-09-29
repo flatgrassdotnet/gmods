@@ -20,11 +20,12 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"gmods/db"
 	"gmods/frontend"
 	"log"
+	"net"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -34,7 +35,8 @@ func main() {
 	dbproto := flag.String("dbproto", "tcp", "database connection protocol")
 	dbaddr := flag.String("dbaddr", "localhost", "database server address")
 	dbname := flag.String("dbname", "gmods", "database name")
-	port := flag.Int("port", 80, "http listen port")
+	proto := flag.String("proto", "tcp", "proto for web server")
+	addr := flag.String("addr", "127.0.0.1:80", "address for web server")
 	flag.Parse()
 
 	// set up frontend
@@ -59,5 +61,26 @@ func main() {
 	http.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	// start http server
-	http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
+	if *proto == "unix" {
+		err = os.Remove(*addr)
+		if err != nil && !os.IsNotExist(err) {
+			log.Fatalf("failed to delete unix socket: %s", err)
+		}
+	}
+
+	l, err := net.Listen(*proto, *addr)
+	if err != nil {
+		log.Fatalf("failed to create web server listener: %s", err)
+	}
+
+	defer l.Close()
+
+	if *proto == "unix" {
+		err = os.Chmod(*addr, 0777)
+		if err != nil {
+			log.Fatalf("failed to set unix socket permissions: %s", err)
+		}
+	}
+
+	http.Serve(l, nil)
 }
