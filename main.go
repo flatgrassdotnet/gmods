@@ -58,7 +58,7 @@ func main() {
 
 	http.HandleFunc("POST /download/{id}", frontend.Download)
 
-	http.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	http.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(frontend.AssetsFS)))
 
 	// start http server
 	if *proto == "unix" {
