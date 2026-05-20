@@ -97,7 +97,7 @@ a.biglink {
     display: block;
     content: " ";
     width: 60px;
-    background-image: linear-gradient(to bottom, white, transparent), url('/static/img/gmlogo.svg#svgView(preserveAspectRatio(none))');
+    background-image: linear-gradient(to bottom, white, transparent), url('/static/img/gmlogo.svg');
     margin-left: 22px;
     transform: scaleY(-1);
     background-size: 100% 100%;
