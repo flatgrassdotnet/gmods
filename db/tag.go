@@ -21,6 +21,16 @@ package db
 import "context"
 
 func GetPopularTags(ctx context.Context) ([]string, error) {
+	if (GetProtocol() == "test") { return []string{
+		"garrysmod",
+		"1337",
+		"hax",
+		"lol",
+		"lua",
+		"is",
+		"awesome",
+	}, nil }
+
 	var tags []string
 	rows, err := conn.QueryContext(ctx, "SELECT tag FROM tags GROUP BY tag ORDER BY COUNT(*) DESC, tag ASC LIMIT 100")
 	if err != nil {

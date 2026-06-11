@@ -25,10 +25,20 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var conn *sql.DB
+var conn *sql.DB = nil
+var protocol_type = ""
+
+func GetProtocol() string {
+	return protocol_type
+}
 
 func Init(username string, password string, protocol string, address string, database string) error {
 	var err error
+
+	protocol_type = protocol
+	if protocol == "none" {
+		return nil
+	}
 
 	conn, err = sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s?parseTime=true", username, password, protocol, address, database))
 	if err != nil {
