@@ -48,7 +48,14 @@ func (i Item) PrettySize() string {
 }
 
 func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) {
-	q := "SELECT p.id, p.name, p.filename, p.description, p.size, p.uploader, p.uploaded, s.downloads, s.views FROM packages p JOIN stats s ON p.id = s.pid"
+	q := `SELECT p.id, p.name, p.filename, p.description, p.size, p.uploader, COALESCE(p.uploaded, f.modified), s.downloads, s.views 
+	FROM packages p 
+	JOIN stats s ON p.id = s.pid 
+	LEFT JOIN (
+	SELECT pid, MAX(modified) AS modified 
+	FROM files 
+	GROUP BY pid) f 
+	ON p.id = f.pid`
 	var args []any
 
 	if tag != "" {
@@ -88,7 +95,16 @@ func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) 
 func GetItem(ctx context.Context, id int) (Item, error) {
 	item := Item{ID: id, Images: make(map[int]string)}
 
-	err := conn.QueryRowContext(ctx, "SELECT name, filename, description, size, uploader, uploaded FROM packages WHERE id = ?", id).Scan(&item.Name, &item.Filename, &item.Description, &item.Size, &item.Uploader, &item.Uploaded)
+	q := `SELECT p.name, p.filename, p.description, p.size, p.uploader, COALESCE(p.uploaded, f.modified) 
+	FROM packages p 
+	LEFT JOIN (
+	SELECT pid, MAX(modified) AS modified 
+	FROM files 
+	GROUP BY pid) f 
+	ON p.id = f.pid 
+	WHERE p.id = ?`
+
+	err := conn.QueryRowContext(ctx, q, id).Scan(&item.Name, &item.Filename, &item.Description, &item.Size, &item.Uploader, &item.Uploaded)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return item, ErrInvalidID
