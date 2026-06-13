@@ -64,7 +64,23 @@ func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) 
 		args = append(args, tag)
 	}
 	if query != "" {
-		q += " WHERE p.name LIKE CONCAT('%', ?, '%')"
+		// filenames
+		q += ` LEFT JOIN ( 
+		SELECT DISTINCT pid 
+		FROM files 
+		WHERE MATCH(path) AGAINST(?) 
+		) f2 
+		ON f2.pid = p.id 
+		WHERE f2.pid IS NOT NULL`
+		args = append(args, query)
+
+		// description
+		q += " OR MATCH(p.description) AGAINST(?)"
+		args = append(args, query)
+
+		// upload name
+		// LIKE is needed for handling underscores
+		q += " OR p.name LIKE CONCAT('%', ?, '%')"
 		args = append(args, strings.ReplaceAll(query, " ", "_"))
 	}
 	if tag == "" && query == "" {
