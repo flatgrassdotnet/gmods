@@ -23,6 +23,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type Item struct {
@@ -64,7 +65,7 @@ func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) 
 	}
 	if query != "" {
 		q += " WHERE p.name LIKE CONCAT('%', ?, '%')"
-		args = append(args, query)
+		args = append(args, strings.ReplaceAll(query, " ", "_"))
 	}
 	if tag == "" && query == "" {
 		q += " ORDER BY RAND() LIMIT 20"
