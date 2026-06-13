@@ -6,7 +6,7 @@
 		</div>
 	</div>
 	<div class="screenshots">
-		{{range $id, $res := .Images}}<a href="?showimg={{$id}}">
+		{{range $id, $res := .Images}}<a href="https://data.gmods.org/{{$.ID}}/{{$id}}/{{$res}}.jpg">
 			<img src="https://data.gmods.org/{{$.ID}}/{{$id}}/{{$res}}.jpg" onerror="this.remove();" loading="lazy">
 		</a>{{end}}
 	</div>
