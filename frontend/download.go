@@ -22,7 +22,9 @@ import (
 	"fmt"
 	"gmods/db"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 )
 
 func Download(w http.ResponseWriter, r *http.Request) {
@@ -38,5 +40,13 @@ func Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("https://data.gmods.org/%d/%s", item.ID, item.Filename), http.StatusSeeOther)
+	name := item.Name
+	if !strings.HasSuffix(name, ".zip") {
+		name += ".zip"
+	}
+
+	v := make(url.Values)
+	v.Set("n", name)
+
+	http.Redirect(w, r, fmt.Sprintf("https://data.gmods.org/%d/%s?%s", item.ID, item.Filename, v.Encode()), http.StatusSeeOther)
 }
