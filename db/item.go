@@ -165,3 +165,13 @@ func GetItem(ctx context.Context, id int) (Item, error) {
 
 	return item, nil
 }
+
+func GetOriginalItemID(ctx context.Context, id int) (int, error) {
+	var pid int
+	err := conn.QueryRowContext(ctx, "SELECT pid FROM duplicates WHERE id = ?", id).Scan(&pid)
+	if err != nil {
+		return 0, ErrInvalidID
+	}
+
+	return pid, nil
+}

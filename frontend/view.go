@@ -38,7 +38,18 @@ func View(w http.ResponseWriter, r *http.Request) {
 
 	bd.Item, err = db.GetItem(r.Context(), id)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("failed to get download: %s", err), http.StatusInternalServerError)
+		if err != db.ErrInvalidID {
+			http.Error(w, fmt.Sprintf("failed to get download: %s", err), http.StatusInternalServerError)
+			return
+		}
+
+		pid, err := db.GetOriginalItemID(r.Context(), id)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to get download: %s", err), http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, fmt.Sprintf("/view/%d", pid), http.StatusMovedPermanently)
 		return
 	}
 
