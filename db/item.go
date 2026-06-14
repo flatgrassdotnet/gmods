@@ -55,6 +55,8 @@ func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) 
 	LEFT JOIN (
 	SELECT pid, MAX(modified) AS modified 
 	FROM files 
+	WHERE modified > TIMESTAMP'2006-01-01 00:00:00' 
+	AND modified < TIMESTAMP'2015-01-01 00:00:00' 
 	GROUP BY pid) f 
 	ON p.id = f.pid`
 	var args []any
@@ -117,6 +119,8 @@ func GetItem(ctx context.Context, id int) (Item, error) {
 	LEFT JOIN (
 	SELECT pid, MAX(modified) AS modified 
 	FROM files 
+	WHERE modified > TIMESTAMP'2006-01-01 00:00:00' 
+	AND modified < TIMESTAMP'2015-01-01 00:00:00' 
 	GROUP BY pid) f 
 	ON p.id = f.pid 
 	WHERE p.id = ?`
