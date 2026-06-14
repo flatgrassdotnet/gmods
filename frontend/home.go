@@ -24,6 +24,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/xeonx/timeago"
 )
@@ -48,13 +49,18 @@ type BaseData struct {
 	Item db.Item
 }
 
-var templateFuncs = template.FuncMap{"sum": func(num ...int) int {
-	var i int
-	for _, v := range num {
-		i += v
-	}
-	return i
-}, "timeago": timeago.English.Format}
+var templateFuncs = template.FuncMap{
+	"sum": func(num ...int) int {
+		var i int
+		for _, v := range num {
+			i += v
+		}
+		return i
+	},
+	"timeago": timeago.English.Format,
+	"prettyname": func(s string) string {
+		return strings.TrimSuffix(strings.ReplaceAll(s, "_", " "), ".zip")
+	}}
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	var err error
