@@ -48,6 +48,10 @@ func (i Item) PrettySize() string {
 	return fmt.Sprintf("%.02f MB", float64(i.Size)/1024/1024)
 }
 
+func (i Item) PrettyName() string {
+	return strings.TrimSuffix(strings.ReplaceAll(i.Name, "_", " "), ".zip")
+}
+
 func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) {
 	q := `SELECT p.id, p.name, p.filename, p.description, p.size, p.uploader, COALESCE(p.uploaded, f.modified), s.downloads, s.views 
 	FROM packages p 

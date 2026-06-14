@@ -1,6 +1,6 @@
 {{define "view"}}<div style="clear:both; margin-top: 10px;">
 	<div id="titlebox">
-		<h2>{{prettyname .Name}}</h2>
+		<h2>{{.PrettyName}}</h2>
 		<div class="dlmeta">
 			Size: {{.PrettySize}} {{if .Uploaded.Valid}}- Uploaded {{timeago .Uploaded.Time}}{{end}} - {{.Downloads}} Downloads{{if .Uploader.Valid}} - Uploaded by <a href="#" class="username">{{.Uploader.String}}</a>{{end}}
 		</div>

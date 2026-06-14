@@ -24,7 +24,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/xeonx/timeago"
 )
@@ -57,10 +56,7 @@ var templateFuncs = template.FuncMap{
 		}
 		return i
 	},
-	"timeago": timeago.English.Format,
-	"prettyname": func(s string) string {
-		return strings.TrimSuffix(strings.ReplaceAll(s, "_", " "), ".zip")
-	}}
+	"timeago": timeago.English.Format}
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	var err error

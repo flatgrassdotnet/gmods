@@ -53,7 +53,7 @@ func View(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bd.Title = fmt.Sprintf("%s - Download!", bd.Item.Name)
+	bd.Title = fmt.Sprintf("%s - Download!", bd.Item.PrettyName())
 
 	err = t.Execute(w, bd)
 	if err != nil {
