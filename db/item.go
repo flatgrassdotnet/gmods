@@ -23,6 +23,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type Item struct {
@@ -53,6 +54,10 @@ func (i Item) PrettySize() string {
 	return fmt.Sprintf("%.02f MB", float64(i.Size)/1024/1024)
 }
 
+func (i Item) PrettyName() string {
+	return strings.TrimSuffix(strings.ReplaceAll(i.Name, "_", " "), ".zip")
+}
+
 func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) {
 	if (GetProtocol() == "test") { return []Item{
 		TEST_ITEM,
@@ -61,7 +66,17 @@ func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) 
 		TEST_ITEM,
 	}, nil }
 
-	q := "SELECT p.id, p.name, p.filename, p.description, p.size, p.uploader, p.uploaded, s.downloads, s.views FROM packages p JOIN stats s ON p.id = s.pid"
+	q := `SELECT p.id, p.name, p.filename, p.description, p.size, p.uploader, COALESCE(p.uploaded, f.modified), s.downloads, s.views 
+	FROM packages p 
+	JOIN stats s ON p.id = s.pid 
+	LEFT JOIN (
+	SELECT pid, MAX(modified) AS modified 
+	FROM files 
+	WHERE modified > TIMESTAMP'2006-01-01 00:00:00' 
+	AND modified < TIMESTAMP'2015-01-01 00:00:00' 
+	GROUP BY pid) f 
+	ON p.id = f.pid`
+  
 	var args []any
 
 	if tag != "" {
@@ -69,8 +84,24 @@ func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) 
 		args = append(args, tag)
 	}
 	if query != "" {
-		q += " WHERE p.name LIKE CONCAT('%', ?, '%')"
+		// filenames
+		q += ` LEFT JOIN ( 
+		SELECT DISTINCT pid 
+		FROM files 
+		WHERE MATCH(path) AGAINST(?) 
+		) f2 
+		ON f2.pid = p.id 
+		WHERE f2.pid IS NOT NULL`
 		args = append(args, query)
+
+		// description
+		q += " OR MATCH(p.description) AGAINST(?)"
+		args = append(args, query)
+
+		// upload name
+		// LIKE is needed for handling underscores
+		q += " OR p.name LIKE CONCAT('%', ?, '%')"
+		args = append(args, strings.ReplaceAll(query, " ", "_"))
 	}
 	if tag == "" && query == "" {
 		q += " ORDER BY RAND() LIMIT 20"
@@ -103,7 +134,18 @@ func GetItem(ctx context.Context, id int) (Item, error) {
 
 	item := Item{ID: id, Images: make(map[int]string)}
 
-	err := conn.QueryRowContext(ctx, "SELECT name, filename, description, size, uploader, uploaded FROM packages WHERE id = ?", id).Scan(&item.Name, &item.Filename, &item.Description, &item.Size, &item.Uploader, &item.Uploaded)
+	q := `SELECT p.name, p.filename, p.description, p.size, p.uploader, COALESCE(p.uploaded, f.modified) 
+	FROM packages p 
+	LEFT JOIN (
+	SELECT pid, MAX(modified) AS modified 
+	FROM files 
+	WHERE modified > TIMESTAMP'2006-01-01 00:00:00' 
+	AND modified < TIMESTAMP'2015-01-01 00:00:00' 
+	GROUP BY pid) f 
+	ON p.id = f.pid 
+	WHERE p.id = ?`
+
+	err := conn.QueryRowContext(ctx, q, id).Scan(&item.Name, &item.Filename, &item.Description, &item.Size, &item.Uploader, &item.Uploaded)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return item, ErrInvalidID
@@ -142,4 +184,14 @@ func GetItem(ctx context.Context, id int) (Item, error) {
 	}
 
 	return item, nil
+}
+
+func GetOriginalItemID(ctx context.Context, id int) (int, error) {
+	var pid int
+	err := conn.QueryRowContext(ctx, "SELECT pid FROM duplicates WHERE id = ?", id).Scan(&pid)
+	if err != nil {
+		return 0, ErrInvalidID
+	}
+
+	return pid, nil
 }
