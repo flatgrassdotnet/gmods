@@ -44,6 +44,12 @@ type Item struct {
 
 var ErrInvalidID = errors.New("download id not found")
 
+var TEST_ITEM = Item{
+	Name: "missingname",
+	Filename: "missingname.zip",
+	Size: 1337 * (1024 * 1024),
+}
+
 func (i Item) PrettySize() string {
 	return fmt.Sprintf("%.02f MB", float64(i.Size)/1024/1024)
 }
@@ -53,6 +59,13 @@ func (i Item) PrettyName() string {
 }
 
 func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) {
+	if (GetProtocol() == "test") { return []Item{
+		TEST_ITEM,
+		TEST_ITEM,
+		TEST_ITEM,
+		TEST_ITEM,
+	}, nil }
+
 	q := `SELECT p.id, p.name, p.filename, p.description, p.size, p.uploader, COALESCE(p.uploaded, f.modified), s.downloads, s.views 
 	FROM packages p 
 	JOIN stats s ON p.id = s.pid 
@@ -63,6 +76,7 @@ func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) 
 	AND modified < TIMESTAMP'2015-01-01 00:00:00' 
 	GROUP BY pid) f 
 	ON p.id = f.pid`
+  
 	var args []any
 
 	if tag != "" {
@@ -116,6 +130,8 @@ func GetItemList(ctx context.Context, tag string, query string) ([]Item, error) 
 }
 
 func GetItem(ctx context.Context, id int) (Item, error) {
+	if (GetProtocol() == "test") { return TEST_ITEM, nil }
+
 	item := Item{ID: id, Images: make(map[int]string)}
 
 	q := `SELECT p.name, p.filename, p.description, p.size, p.uploader, COALESCE(p.uploaded, f.modified) 
